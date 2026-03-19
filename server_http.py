@@ -6,6 +6,8 @@ import ssl
 # Configuration
 HOST = "0.0.0.0"
 PORT = 8765
+CERT_FILE = os.environ.get("MCP_CERT_FILE", "server.pem")
+KEY_FILE = os.environ.get("MCP_KEY_FILE", "server-key.pem")
 
 def log(msg):
     print(f"[SERVER] {msg}", flush=True)
@@ -124,7 +126,7 @@ def run():
     httpd = HTTPServer((HOST, PORT), MCPHandler)
     
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    context.load_cert_chain(certfile="192.168.1.70+2.pem", keyfile="192.168.1.70+2-key.pem")
+    context.load_cert_chain(certfile=CERT_FILE, keyfile=KEY_FILE)
     httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
     
     try:

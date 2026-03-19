@@ -6,7 +6,7 @@ This is a minimal, working example of an MCP (Model Context Protocol) server wri
 
 - Exposes a simple `read_file` tool that reads files from the Ubuntu server
 - Uses HTTPS with self-signed certificates (mkcert)  
-- Runs on a remote Ubuntu machine (192.168.1.70)
+- Runs on a remote Ubuntu machine (YOUR_SERVER_IP)
 - Connects to Claude Desktop on Windows via `mcp-remote` proxy
 - **Proper TLS certificate validation** (not bypassed!)
 
@@ -24,10 +24,10 @@ wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.
 chmod +x mkcert-v1.4.4-linux-amd64
 sudo mv mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert
 mkcert -install
-mkcert 192.168.1.70 localhost 127.0.0.1
+mkcert YOUR_SERVER_IP localhost 127.0.0.1
 
 # 2. Copy rootCA.pem to Windows (at C:\certs\mkcert-rootCA.pem)
-mkcert -CAROOT  # Shows: /home/carlos/.local/share/mkcert
+mkcert -CAROOT  # Shows: ~/.local/share/mkcert
 # Copy rootCA.pem from that directory to Windows
 
 # 3. Start the server
@@ -54,7 +54,7 @@ Edit: `%APPDATA%\Claude\claude_desktop_config.json`
       "args": [
         "-y",
         "mcp-remote",
-        "https://192.168.1.70:8765",
+        "https://YOUR_SERVER_IP:8765",
         "--http"
       ],
       "env": {
@@ -83,7 +83,7 @@ See [README_CERT_UPDATE.md](README_CERT_UPDATE.md) for complete details on:
    - Right-click `rootCA.pem` → Install Certificate
    - Store Location: **Local Machine** (requires admin)
    - Place in: **Trusted Root Certification Authorities**
-   - Set Friendly Name: `mkcert-ubuntu-192.168.1.70` (makes it easy to find later)
+   - Set Friendly Name: `mkcert-ubuntu-YOUR_SERVER_IP` (makes it easy to find later)
 
 2. **Verify certificate installed**
 ```powershell
@@ -108,7 +108,7 @@ ps aux | grep "python3.*server_http"
 netstat -tuln | grep 8765
 
 # Test from Windows
-Test-NetConnection -ComputerName 192.168.1.70 -Port 8765
+Test-NetConnection -ComputerName YOUR_SERVER_IP -Port 8765
 ```
 
 ## Configure Claude Desktop
@@ -128,7 +128,7 @@ Test-NetConnection -ComputerName 192.168.1.70 -Port 8765
       "args": [
         "-y",
         "mcp-remote",
-        "https://192.168.1.70:8765",
+        "https://YOUR_SERVER_IP:8765",
         "--http"
       ],
       "env": {
@@ -167,7 +167,7 @@ Completely quit and restart Claude Desktop for changes to take effect.
 
 ### Connection Timeout
 - Verify server is running: `netstat -tuln | grep 8765`
-- Test connectivity from Windows: `Test-NetConnection -ComputerName 192.168.1.70 -Port 8765`
+- Test connectivity from Windows: `Test-NetConnection -ComputerName YOUR_SERVER_IP -Port 8765`
 - Check Ubuntu firewall: `sudo ufw status`
 
 ### Certificate Errors
@@ -177,7 +177,7 @@ Completely quit and restart Claude Desktop for changes to take effect.
 ### Server Not Responding
 - Check server logs: `tail -f /tmp/mcp_http.log`
 - Verify server is listening on `0.0.0.0` not `127.0.0.1`
-- Test with curl: `curl -k https://192.168.1.70:8765` (should hang, that's normal)
+- Test with curl: `curl -k https://YOUR_SERVER_IP:8765` (should hang, that's normal)
 
 ### "Server Disconnected" in Claude Desktop
 - Check `mcp-server-PythonFS.log` for specific errors
@@ -222,8 +222,8 @@ The flow:
 - `server_fixed.py` - SSE implementation attempt (more complex, had issues)
 - `server.py` - Original ChatGPT version (broken architecture)
 - `CERT_INFO.md` - Certificate documentation
-- `192.168.1.70+2.pem` - Server certificate
-- `192.168.1.70+2-key.pem` - Server private key
+- `server.pem` - Server certificate
+- `server-key.pem` - Server private key
 
 ## Security Notes
 

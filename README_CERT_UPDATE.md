@@ -15,11 +15,11 @@ Use `NODE_EXTRA_CA_CERTS` environment variable to point Node.js to your root CA 
 ```bash
 cd ~/code/sse-filesystem-mcp
 mkcert -install
-mkcert 192.168.1.70 localhost 127.0.0.1
+mkcert YOUR_SERVER_IP localhost 127.0.0.1
 
 # Find where the root CA is stored
 mkcert -CAROOT
-# Output: /home/carlos/.local/share/mkcert
+# Output: ~/.local/share/mkcert
 ```
 
 ### 2. Copy Root CA to Windows
@@ -29,7 +29,7 @@ Copy the `rootCA.pem` file from Ubuntu to a permanent location on Windows:
 **Recommended location:** `C:\certs\mkcert-rootCA.pem`
 
 Methods to copy:
-- Via network share: `\\192.168.1.70\home\carlos\.local\share\mkcert\rootCA.pem`
+- Via network share: `\\YOUR_SERVER_IP\home\YOUR_USERNAME\.local\share\mkcert\rootCA.pem`
 - Via USB drive
 - Via SCP/SFTP
 
@@ -39,7 +39,7 @@ Methods to copy:
 New-Item -ItemType Directory -Force -Path C:\certs
 
 # Copy the file
-Copy-Item "\\192.168.1.70\home\carlos\.local\share\mkcert\rootCA.pem" "C:\certs\mkcert-rootCA.pem"
+Copy-Item "\\YOUR_SERVER_IP\home\YOUR_USERNAME\.local\share\mkcert\rootCA.pem" "C:\certs\mkcert-rootCA.pem"
 ```
 
 ### 3. Configure Claude Desktop
@@ -56,7 +56,7 @@ Edit: `%APPDATA%\Claude\claude_desktop_config.json`
       "args": [
         "-y",
         "mcp-remote",
-        "https://192.168.1.70:8765",
+        "https://YOUR_SERVER_IP:8765",
         "--http"
       ],
       "env": {
@@ -125,7 +125,7 @@ Windows Certificate Store
 Node.js Certificate Validation
   ├─ Built-in CA bundle (public CAs like Let's Encrypt, DigiCert, etc.)
   └─ NODE_EXTRA_CA_CERTS → Your custom CA (mkcert root)
-       └─ Validates: 192.168.1.70+2.pem (your server cert)
+       └─ Validates: server.pem (your server cert)
 ```
 
 **Key insight:** Windows trusting a cert ≠ Node.js trusting a cert
@@ -164,7 +164,7 @@ Get-Content C:\certs\mkcert-rootCA.pem
 You CAN still install the root CA in Windows Certificate Store (it won't hurt), but it's not required for Claude Desktop MCP connections.
 
 **When it DOES help:**
-- Accessing `https://192.168.1.70:8765` in web browsers
+- Accessing `https://YOUR_SERVER_IP:8765` in web browsers
 - Other Windows applications that DO use the Windows certificate store
 - PowerShell's `Invoke-WebRequest` commands
 
@@ -172,7 +172,7 @@ You CAN still install the root CA in Windows Certificate Store (it won't hurt), 
 1. Right-click `rootCA.pem` → Install Certificate
 2. Store Location: **Local Machine** (requires admin)
 3. Place in: **Trusted Root Certification Authorities**
-4. Set Friendly Name: `mkcert-ubuntu-192.168.1.70`
+4. Set Friendly Name: `mkcert-ubuntu-YOUR_SERVER_IP`
 
 ## For Corporate Environments (Behind Zscaler, etc.)
 
@@ -186,7 +186,7 @@ If you're behind a corporate proxy that intercepts HTTPS:
       "args": [
         "-y",
         "mcp-remote",
-        "https://192.168.1.70:8765",
+        "https://YOUR_SERVER_IP:8765",
         "--http"
       ],
       "env": {
